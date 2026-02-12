@@ -14,7 +14,7 @@ struct PriorityComparator {
     }
 };
 
-void addNewArrivals(const std::vector<Process>& allProcesses,
+void queueNewArrivals(const std::vector<Process>& allProcesses,
                     std::priority_queue<Process*, std::vector<Process*>, PriorityComparator>& readyQueue,
                     size_t& index,
                     int cpuCycle)
@@ -26,6 +26,7 @@ void addNewArrivals(const std::vector<Process>& allProcesses,
 }
 
 int main() {
+    // Predefined processes that are scheduled to run
     std::vector<Process> allProcesses = {
         // burst, arrival, priority
         Process(5, 0, 2),
@@ -40,7 +41,7 @@ int main() {
 
     while (index < allProcesses.size() || !readyQueue.empty()) {
         // Add new arrivals at current CPU cycle
-        addNewArrivals(allProcesses, readyQueue, index, cpuCycle);
+        queueNewArrivals(allProcesses, readyQueue, index, cpuCycle);
 
         if (!readyQueue.empty()) {
             Process* p = readyQueue.top();
@@ -54,7 +55,7 @@ int main() {
                 std::cout << p->getPid() << " ";
                 
                 // Check for arrivals every cycle
-                addNewArrivals(allProcesses, readyQueue, index, cpuCycle);
+                queueNewArrivals(allProcesses, readyQueue, index, cpuCycle);
             }
         } else {
             // CPU idle
