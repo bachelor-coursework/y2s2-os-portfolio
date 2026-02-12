@@ -5,10 +5,12 @@
 
 struct PriorityComparator {
     bool operator()(Process* a, Process* b) const {
+        // FCFS for same priority processes
         if (a->getPriority() == b->getPriority()) {
-            return a->getArrivalTime() > b->getArrivalTime(); // earlier arrival = higher priority
+            return a->getArrivalTime() > b->getArrivalTime(); 
         }
-        return a->getPriority() > b->getPriority(); // lower number = higher priority
+        // Lower value = higher priority
+        return a->getPriority() > b->getPriority();
     }
 };
 
@@ -45,7 +47,8 @@ int main() {
             readyQueue.pop();
 
             // Run same process until complete
-            for (int i = 0; i < p->getBurstTime(); i++) {
+            int burst = p->getBurstTime();
+            for (int i = 0; i < burst; i++) {
                 cpuCycle++;
                 p->setBurstTime(p->getBurstTime() - 1);
                 std::cout << p->getPid() << " ";
