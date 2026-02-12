@@ -5,8 +5,8 @@
 
 constexpr int TIME_QUANTUM = 3;
 
-void queueNewArrivals(const std::vector<Process>& allProcesses, std::queue<Process*>& readyQueue, size_t& index, int cpuCycle) {
-    while (index < allProcesses.size() && allProcesses[index].getArrivalTime() == cpuCycle) {
+void queueNewArrivals(const std::vector<Process>& allProcesses, std::queue<Process*>& readyQueue, size_t& index, int timeUnit) {
+    while (index < allProcesses.size() && allProcesses[index].getArrivalTime() == timeUnit) {
         readyQueue.push(const_cast<Process*>(&allProcesses[index])); // add pointer to queue
         index++;
     }
@@ -26,12 +26,12 @@ int main() {
     };
 
     std::queue<Process*> readyQueue;
-    int cpuCycle = 0;
+    int timeUnit = 0;
     size_t index = 0;
 
     // Run until all processes are finished
     while (index < allProcesses.size() || !readyQueue.empty()) {
-        queueNewArrivals(allProcesses, readyQueue, index, cpuCycle);
+        queueNewArrivals(allProcesses, readyQueue, index, timeUnit);
 
         if (!readyQueue.empty()) {
             Process* p = readyQueue.front();
@@ -41,13 +41,13 @@ int main() {
 
             // Run process, and between every burst, check for new arrivals
             for (int i = 0; i < runTime; i++) {
-                p->executeSingleBurst(cpuCycle);
+                p->executeSingleBurst(timeUnit);
                 std::cout << p->getPid() << " ";
                 
-                cpuCycle++;
+                timeUnit++;
 
                 // Check for arrivals every cycle
-                queueNewArrivals(allProcesses, readyQueue, index, cpuCycle);
+                queueNewArrivals(allProcesses, readyQueue, index, timeUnit);
             }
 
             // Push back into readyQueue if process has not finished
@@ -56,7 +56,7 @@ int main() {
             }
         } else {
             // CPU idle
-            cpuCycle++;
+            timeUnit++;
             std::cout << "X ";
         }
     }
