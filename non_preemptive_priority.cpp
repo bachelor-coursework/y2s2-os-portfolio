@@ -30,9 +30,11 @@ int main() {
     std::vector<Process> allProcesses = {
         // burst, arrival, priority
         Process(5, 0, 2),
-        Process(4, 1, 1),
-        Process(6, 3, 3),
-        Process(1, 4, 2)
+        Process(10, 1, 1),
+        Process(1, 2, 4),
+        Process(6, 3, 1),
+        Process(1, 4, 5),
+        Process(7, 4, 2),
     };
 
     std::priority_queue<Process*, std::vector<Process*>, PriorityComparator> readyQueue;
@@ -50,10 +52,11 @@ int main() {
             // Run same process until complete
             int burst = p->getBurstTime();
             for (int i = 0; i < burst; i++) {
-                cpuCycle++;
-                p->setBurstTime(p->getBurstTime() - 1);
+                p->executeSingleBurst(cpuCycle);
                 std::cout << p->getPid() << " ";
                 
+                cpuCycle++;
+
                 // Check for arrivals every cycle
                 queueNewArrivals(allProcesses, readyQueue, index, cpuCycle);
             }
@@ -64,6 +67,6 @@ int main() {
         }
     }
 
-    std::cout << std::endl;
+    Process::printProcessListStats(allProcesses);
     return 0;
 }

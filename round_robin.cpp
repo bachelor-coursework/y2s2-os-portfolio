@@ -17,9 +17,12 @@ int main() {
     std::vector<Process> allProcesses = {
         // burst, arrival
         Process(5, 0),
-        Process(4, 1),
+        Process(10, 1),
+        Process(1, 2),
         Process(6, 3),
-        Process(1, 4)
+        Process(1, 4),
+        Process(7, 4),
+
     };
 
     std::queue<Process*> readyQueue;
@@ -34,19 +37,21 @@ int main() {
             Process* p = readyQueue.front();
             readyQueue.pop();
 
-            int runTime = std::min(TIME_QUANTUM, p->getBurstTime());
+            int runTime = std::min(TIME_QUANTUM, p->getBurstTimeRemaining());
 
             // Run process, and between every burst, check for new arrivals
             for (int i = 0; i < runTime; i++) {
-                cpuCycle++;
-                p->setBurstTime(p->getBurstTime() - 1);
+                p->executeSingleBurst(cpuCycle);
                 std::cout << p->getPid() << " ";
+                
+                cpuCycle++;
 
+                // Check for arrivals every cycle
                 queueNewArrivals(allProcesses, readyQueue, index, cpuCycle);
             }
 
             // Push back into readyQueue if process has not finished
-            if (p->getBurstTime() > 0) {
+            if (p->getBurstTimeRemaining() > 0) {
                 readyQueue.push(p);
             }
         } else {
@@ -56,6 +61,6 @@ int main() {
         }
     }
 
-    std::cout << std::endl;
+    Process::printProcessListStats(allProcesses);
     return 0;
 }
